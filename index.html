@@ -2,46 +2,95 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <title>Kirin Central | Dashboard</title>
+    <title>Kirin Central | Command Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body { 
-            background: #0d1117; color: #c9d1d9; font-family: 'Inter', sans-serif; 
-            padding: 50px 20px; max-width: 800px; margin: auto; 
-        }
+        body { background: #0d1117; color: #c9d1d9; font-family: 'Inter', sans-serif; padding: 20px; max-width: 1000px; margin: auto; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        .box { background: #161b22; padding: 20px; border-radius: 12px; border: 1px solid #30363d; margin-bottom: 20px; }
         h1 { text-align: center; color: #58a6ff; margin-bottom: 40px; }
-        .repo-grid { display: grid; gap: 15px; }
-        .repo-card { 
-            background: #161b22; padding: 20px; border-radius: 12px; 
-            border: 1px solid #30363d; transition: transform 0.3s, border 0.3s;
-        }
-        .repo-card:hover { 
-            transform: translateY(-5px); border: 1px solid #58a6ff; 
-        }
-        a { text-decoration: none; color: #58a6ff; font-weight: bold; font-size: 1.2em; }
-        p { color: #8b949e; font-size: 0.9em; margin-top: 5px; }
-        .loading { text-align: center; color: #8b949e; }
+        h2 { color: #58a6ff; font-size: 1.1em; margin-top: 0; }
+        .card { background: #0d1117; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #30363d; font-size: 0.9em; }
+        a { color: #58a6ff; text-decoration: none; font-weight: bold; }
+        button { padding: 10px; cursor: pointer; background: #238636; color: white; border: none; border-radius: 6px; width: 100%; margin-top: 10px; }
+        input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 5px; border-radius: 4px; width: 80px; }
     </style>
 </head>
 <body>
     <h1>Kirin Central Dashboard 🌚</h1>
-    <div id="repo-list" class="repo-grid">
-        <div class="loading">Memuatkan harta karun...</div>
+    
+    <div class="grid">
+        <div class="box">
+            <h2>📂 Recent Repos</h2>
+            <div id="repo-list">Loading...</div>
+        </div>
+
+        <div class="box">
+            <h2>🚀 Latest Releases</h2>
+            <div id="release-list">Loading...</div>
+        </div>
+
+        <div class="box">
+            <h2>🛠️ Kirin Converter</h2>
+            <input type="file" id="zipInput" accept=".zip,.cbz" style="width:100%;"><br><br>
+            <label>W:</label><input type="number" id="pdfWidth" value="210">
+            <label>H:</label><input type="number" id="pdfHeight" value="297"><br><br>
+            <button onclick="zipToPdf()">Convert to PDF</button>
+        </div>
     </div>
 
     <script>
-        const username = 'Kirin-Bot'; // TUKAR NI KE USERNAME AWAK
-        fetch(`https://api.github.com/users/${username}/repos?sort=updated`)
+        const username = 'Kirin-Bot'; // TUKAR SINI
+
+        // Fetch Repos
+        fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=6`)
             .then(res => res.json())
             .then(data => {
-                const list = document.getElementById('repo-list');
-                list.innerHTML = data.filter(repo => !repo.fork).map(repo => `
-                    <div class="repo-card">
-                        <a href="${repo.html_url}" target="_blank">${repo.name}</a>
-                        <p>${repo.description || 'Tiada deskripsi, tapi ini memang harta karun.'}</p>
-                    </div>
-                `).join('');
+                document.getElementById('repo-list').innerHTML = data.filter(r => !r.fork).map(r => 
+                    `<div class="card"><a href="${r.html_url}" target="_blank">${r.name}</a></div>`).join('');
             });
+
+        // Fetch Releases
+        fetch(`https://api.github.com/users/${username}/repos?per_page=10`)
+            .then(res => res.json())
+            .then(repos => {
+                const list = document.getElementById('release-list');
+                list.innerHTML = '';
+                repos.forEach(repo => {
+                    fetch(`https://api.github.com/repos/${username}/${repo.name}/releases/latest`)
+                        .then(res => res.ok ? res.json() : null)
+                        .then(rel => {
+                            if (rel) list.innerHTML += `<div class="card"><a href="${rel.html_url}">${repo.name}</a><br><small>${rel.tag_name}</small></div>`;
+                        });
+                });
+            });
+
+        // Converter Logic
+        async function zipToPdf() {
+            const file = document.getElementById('zipInput').files[0];
+            const w = document.getElementById('pdfWidth').value;
+            const h = document.getElementById('pdfHeight').value;
+            if (!file) return alert("Pilih fail dulu!");
+            
+            const zip = await JSZip.loadAsync(file);
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', [w, h]);
+            let first = true;
+            const files = Object.keys(zip.files).sort();
+
+            for (let filename of files) {
+                if (filename.match(/\.(jpg|jpeg|png)$/i)) {
+                    if (!first) pdf.addPage();
+                    const imgData = await zip.files[filename].async("base64");
+                    pdf.addImage('data:image/jpeg;base64,' + imgData, 'JPEG', 0, 0, w, h, undefined, 'FAST');
+                    first = false;
+                }
+            }
+            pdf.save("converted.pdf");
+        }
     </script>
 </body>
 </html>
