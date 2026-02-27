@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kirin Central 🌚</title>
+    <style>
+        body { background: #0d1117; color: white; font-family: sans-serif; padding: 20px; }
+        .repo-card { background: #161b22; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #30363d; }
+    </style>
+</head>
+<body>
+    <h1>Kirin Central Dashboard 🌚</h1>
+    <div id="repo-list">Memuatkan harta karun...</div>
+
+    <script>
+        // Gantikan 'Kirin-Bot' dengan username GitHub awak
+        const username = 'Kirin-Bot'; 
+        fetch(`https://api.github.com/users/${Lanzkila}/repos?sort=updated`)
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('repo-list');
+                list.innerHTML = data.map(repo => `
+                    <div class="repo-card">
+                        <a href="${repo.html_url}" style="color:#58a6ff; font-weight:bold;">${repo.name}</a>
+                        <p>${repo.description || 'Tiada deskripsi'}</p>
+                    </div>
+                `).join('');
+            });
+    </script>
+</body>
+</html>
