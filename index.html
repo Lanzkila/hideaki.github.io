@@ -1,29 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="ms">
 <head>
-    <title>Kirin Central 🌚</title>
+    <meta charset="UTF-8">
+    <title>Kirin Central | Dashboard</title>
     <style>
-        body { background: #0d1117; color: white; font-family: sans-serif; padding: 20px; }
-        .repo-card { background: #161b22; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #30363d; }
+        body { background: #0d1117; color: #c9d1d9; font-family: sans-serif; padding: 20px; max-width: 900px; margin: auto; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+        .card { background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d; margin-bottom: 10px; }
+        h2 { color: #58a6ff; }
+        a { color: #58a6ff; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1>Kirin Central Dashboard 🌚</h1>
-    <div id="repo-list">Memuatkan harta karun...</div>
+    <div class="grid">
+        <div>
+            <h2>📂 Recent Repos</h2>
+            <div id="repo-list">Loading...</div>
+        </div>
+        <div>
+            <h2>🚀 Latest Releases</h2>
+            <div id="release-list">Loading...</div>
+        </div>
+    </div>
 
     <script>
-        // Gantikan 'Kirin-Bot' dengan username GitHub awak
-        const username = 'Kirin-Bot'; 
-        fetch(`https://api.github.com/users/${Lanzkila}/repos?sort=updated`)
+        const username = 'Lanzkila'; // TUKAR NI KE USERNAME AWAK
+
+        // 1. Fetch Repos
+        fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=5`)
             .then(res => res.json())
             .then(data => {
-                const list = document.getElementById('repo-list');
-                list.innerHTML = data.map(repo => `
-                    <div class="repo-card">
-                        <a href="${repo.html_url}" style="color:#58a6ff; font-weight:bold;">${repo.name}</a>
-                        <p>${repo.description || 'Tiada deskripsi'}</p>
-                    </div>
+                document.getElementById('repo-list').innerHTML = data.filter(r => !r.fork).map(r => `
+                    <div class="card"><a href="${r.html_url}">${r.name}</a><br><small>Updated: ${r.updated_at.split('T')[0]}</small></div>
                 `).join('');
+            });
+
+        // 2. Fetch Releases (Cari release dari semua repo)
+        fetch(`https://api.github.com/users/${username}/repos?per_page=10`)
+            .then(res => res.json())
+            .then(repos => {
+                const releaseList = document.getElementById('release-list');
+                releaseList.innerHTML = ''; // Reset
+                repos.forEach(repo => {
+                    fetch(`https://api.github.com/repos/${username}/${repo.name}/releases/latest`)
+                        .then(res => res.ok ? res.json() : null)
+                        .then(rel => {
+                            if (rel) {
+                                releaseList.innerHTML += `
+                                    <div class="card">
+                                        <a href="${rel.html_url}">${repo.name}: ${rel.tag_name}</a><br>
+                                        <small>${rel.published_at.split('T')[0]}</small>
+                                    </div>`;
+                            }
+                        });
+                });
             });
     </script>
 </body>
