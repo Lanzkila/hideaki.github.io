@@ -10,6 +10,36 @@
     <script src='https://unpkg.com/pdf-lib/dist/pdf-lib.min.js'></script>
 
     <style>
+:root {
+  --bg-color: #f0f2f5;
+  --text-color: #1a1d23;
+  --card-bg: #ffffff;
+  --input-bg: #f8f9fa;
+  --border-color: #edf2f7;
+}
+
+body.dark-mode {
+  --bg-color: #1a1d23;
+  --text-color: #e2e8f0;
+  --card-bg: #2d3436;
+  --input-bg: #353b48;
+  --border-color: #4a5568;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: 0.3s; /* Supaya pertukaran warna nampak lembut */
+}
+
+#converter-vault {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+.control-group { background: var(--input-bg); border: 1px solid var(--border-color); }
+select { background-color: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); }
+    
 body {
   background-color: #f0f2f5;
   margin: 0; padding: 20px;
@@ -90,6 +120,9 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20p
 <body>
 
 <div id='converter-vault'>
+    <button onclick="toggleDarkMode()" style="margin-bottom:10px; cursor:pointer;">
+  🌙 Tukar Tema
+</button>
   <div class='title-zone'>
     <h2>MANGA <span>STUDIO</span></h2>
     <p style='font-size:12px; color:#718096; margin-top:5px;'>Hybrid: PDF Merge, Images, ZIP &amp; CBZ</p>
@@ -301,6 +334,20 @@ fileInput.onchange = (e) => {
     }
 };
         document.getElementById("current-year").innerText = new Date().getFullYear();
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    
+    if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+    } else {
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+}
     </script>
 
 </body>
