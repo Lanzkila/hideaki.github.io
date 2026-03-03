@@ -133,9 +133,10 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20p
     <button class='btn-exec btn-cbz' id='cbz-btn'>REVERSE</button>
   </div>
 
-  <div class='footer-note'>
-    <strong>Multi-Support:</strong> ZIP/CBZ to PDF, Multiple Images to PDF, or Multiple PDF Merge.
-  </div>
+<div class='footer-note'>
+    <strong>Multi-Support:</strong> ZIP/CBZ to PDF, Multiple Images to PDF, or Multiple PDF Merge.<br>
+    &copy; <span id="current-year"></span> Manga Studio.
+</div>
 </div>
 
     <script>
@@ -299,6 +300,7 @@ fileInput.onchange = (e) => {
         document.getElementById('file-name').innerText = count > 1 ? `${count} Files Selected` : e.target.files[0].name;
     }
 };
+        document.getElementById("current-year").innerText = new Date().getFullYear();
     </script>
 
 </body>
