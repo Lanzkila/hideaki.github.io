@@ -15,6 +15,8 @@
   --card-bg: #ffffff;         /* Warna asal kotak */
   --text-main: #1a1d23;       /* Warna teks utama */
   --input-bg: #f8f9fa;        /* Warna input */
+  --shadow-color: #e6e9ed;    /* Kelabu muda untuk shadow */
+  --highlight-color: #ffffff; /* Putih untuk highlight */
 }
 
 body.dark-mode {
@@ -22,6 +24,8 @@ body.dark-mode {
   --card-bg: #2d3436;         /* Warna kotak gelap */
   --text-main: #e2e8f0;       /* Warna teks cerah */
   --input-bg: #353b48;        /* Warna input gelap */
+  --shadow-color: #1a1e23;    /* Gelap untuk shadow (Dark mode) */
+  --highlight-color: #3b4249; /* Kelabu gelap untuk highlight */
 }
 body {
   background-color: var(--bg-color); /* Ganti warna asal dengan var */
@@ -55,7 +59,7 @@ body {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   border-radius: 24px;
   background: var(--input-bg);
-  box-shadow: 10px 10px 20px #e6e9ed, -10px -10px 20px #ffffff;
+  box-shadow: 10px 10px 20px var(--shadow-color), -10px -10px 20px var(--highlight-color);
   transition: 0.3s; cursor: pointer; margin-bottom: 25px; position: relative; overflow: hidden;
 }
 .drop-zone:active { transform: scale(0.97); }
@@ -74,7 +78,7 @@ body {
 
 /* Control Panel */
 .control-stack { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
-.control-group { background: var(--input-bg); padding: 15px; border-radius: 15px; border: 1px solid #edf2f7; }
+.control-group { background: var(--input-bg); padding: 15px; border-radius: 15px; border: 1px solid var(--border-color); }
 .control-group label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #718096; margin-bottom: 10px; text-transform: uppercase; }
 
 select {
