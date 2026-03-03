@@ -2,134 +2,141 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comic Converter</title>
-    
-    <!-- Library Penting -->
+    <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport">
+    <title>Manga Studio - GitHub Converter</title>
     <script src="https://cdnjs.cloudflare.com"></script>
     <script src="https://cdnjs.cloudflare.com"></script>
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
-
+    <script src="https://unpkg.com"></script>
     <style>
-        :root { --primary: #5d6cf1; --bg: #f8faff; }
-        body { background: var(--bg); font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); width: 350px; text-align: center; }
-        .file-drop-area { position: relative; border-radius: 20px; padding: 40px 20px; margin-bottom: 20px; box-shadow: inset 0 0 0 1px #edf2f7, 0 10px 20px rgba(0,0,0,0.03); cursor: pointer; display: flex; flex-direction: column; align-items: center; }
-        .icon-display { font-size: 50px !important; color: var(--primary); margin-bottom: 10px; font-style: normal !important; }
-        .file-msg { color: #4a5568; font-size: 0.8rem; font-weight: 500; }
-        input[type=file] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .btn-group { display: flex; flex-direction: column; gap: 10px; }
-        button { padding: 12px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
-        .btn-pdf { background: var(--primary); color: white; }
-        .btn-zip { background: #edf2f7; color: #4a5568; }
-        button:active { transform: scale(0.98); }
-        #status { margin-top: 15px; font-size: 0.75rem; color: #718096; }
+        body { background-color: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        #converter-vault { background: #ffffff; padding: 30px; border-radius: 24px; max-width: 480px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid #e1e8ed; }
+        .title-zone { text-align: center; margin-bottom: 25px; }
+        .title-zone h2 { font-weight: 800; margin: 0; color: #1a1d23; font-size: 24px; }
+        .title-zone span { color: #0984e3; }
+        .drop-zone { height: 150px; border: 1px solid rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; background: linear-gradient(145deg, #ffffff, #f3f7fa); box-shadow: 10px 10px 20px #e6e9ed, -10px -10px 20px #ffffff; transition: 0.3s; cursor: pointer; margin-bottom: 25px; position: relative; overflow: hidden; }
+        .drop-zone::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: 2px dashed #0984e3; border-radius: 24px; margin: 10px; opacity: 0.2; }
+        .icon-circle { width: 55px; height: 55px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 2; margin-bottom: 10px; }
+        #file-name { font-size: 14px; font-weight: 700; color: #2d3436; z-index: 2; text-align: center; padding: 0 15px; }
+        .control-stack { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+        .control-group { background: #f8f9fa; padding: 15px; border-radius: 15px; border: 1px solid #edf2f7; }
+        .control-group label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #718096; margin-bottom: 10px; text-transform: uppercase; }
+        select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e0; background: #fff; font-size: 14px; font-weight: 600; appearance: none; }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #e2e8f0; border-radius: 5px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #0984e3; border-radius: 50%; cursor: pointer; }
+        .progress-bg { width: 100%; height: 10px; background: #edf2f7; border-radius: 10px; overflow: hidden; margin-top: 8px; border: 1px solid #e2e8f0; }
+        #progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #0984e3, #00d2ff); transition: 0.2s; }
+        .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-exec { padding: 16px; border: none; border-radius: 14px; font-weight: 700; font-size: 14px; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .btn-pdf { background: #1e272e; }
+        .btn-cbz { background: #0984e3; }
+        .btn-exec:disabled { background: #cbd5e0 !important; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2 style="margin:0 0 5px 0;">Comic Converter</h2>
-    <p style="color:#718096; font-size:0.8rem; margin-bottom:25px;">Tukar fail CBZ/ZIP ke PDF dengan cepat.</p>
-    
-    <div class="file-drop-area">
-        <i class="material-icons icon-display">folder_open</i>
-        <span id="fileName" class="file-msg">Tarik fail ke sini atau klik untuk cari</span>
-        <input type="file" id="fileInput" accept=".cbz,.zip">
+<div id="converter-vault">
+    <div class="title-zone">
+        <h2>MANGA <span>STUDIO</span></h2>
+        <p style="font-size:12px; color:#718096; margin-top:5px;">Hybrid: PDF, Image, ZIP & CBZ</p>
     </div>
-
-    <div class="btn-group">
-        <button class="btn-pdf" onclick="convertToPDF()">Tukar ke PDF</button>
-        <button class="btn-zip" onclick="reverseToZip()">Tukar ke ZIP</button>
+    <div class="drop-zone" onclick="document.getElementById('file-input').click()">
+        <div class="icon-circle">
+            <svg height="26" viewBox="0 0 24 24" width="26" xmlns="http://www.w3.org"><path d="M12 11V3m0 0l-4 4m4-4l4 4" fill="none" stroke="#0984e3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5""")/>><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="#0984e3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5""")/>></svg>
+        </div>
+        <p id="file-name">Tarik ZIP, CBZ, PDF, atau Imej</p>
+        <input accept=".cbz, .zip, .pdf, image/*" id="file-input" multiple style="display:none;" type="file">
     </div>
-    <div id="status"></div>
+    <div class="control-stack">
+        <div class="control-group">
+            <label><span>MAX RESOLUTION</span> <span id="reso-val" style="color:#0984e3">Auto</span></label>
+            <select id="width-select" onchange="document.getElementById('reso-val').innerText = this.options[this.selectedIndex].text">
+                <option value="original">Auto (Original)</option>
+                <option value="2000">2000px</option>
+                <option value="1200">1200px</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label><span>QUALITY</span> <span id="q-val" style="color:#0984e3">80%</span></label>
+            <input id="quality-range" max="100" min="10" oninput="document.getElementById('q-val').innerText=this.value+'%'" type="range" value="80">
+        </div>
+    </div>
+    <div class="status-area">
+        <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:#4a5568;">
+            <span id="status-text">READY</span>
+            <span id="percentage">0%</span>
+        </div>
+        <div class="progress-bg"><div id="progress-fill"></div></div>
+    </div>
+    <div class="button-grid">
+        <button class="btn-exec btn-pdf" id="pdf-btn">CONVERT</button>
+        <button class="btn-exec btn-cbz" id="cbz-btn">REVERSE</button>
+    </div>
 </div>
 
 <script>
-    const fileInput = document.getElementById('fileInput');
-    const fileNameDisplay = document.getElementById('fileName');
-    const status = document.getElementById('status');
+    const fileInput = document.getElementById('file-input');
+    const statusText = document.getElementById('status-text');
+    const progressFill = document.getElementById('progress-fill');
+    const percentageText = document.getElementById('percentage');
+    const allBtns = document.querySelectorAll('.btn-exec');
 
-    // Papar nama fail bila dipilih
-    fileInput.onchange = () => {
-        if (fileInput.files.length > 0) {
-            fileNameDisplay.innerText = fileInput.files[0].name;
-            status.innerText = "Fail sedia untuk ditukar.";
-        }
+    function disableBtns(state) { allBtns.forEach(b => b.disabled = state); }
+    function updateProgress(current, total, msg) {
+        const percent = Math.round((current / total) * 100);
+        progressFill.style.width = percent + '%';
+        percentageText.innerText = percent + '%';
+        statusText.innerText = `${msg}: ${current}/${total}`;
+    }
+
+    document.getElementById('pdf-btn').onclick = async function() {
+        const files = fileInput.files;
+        if (files.length === 0) return alert("Pilih fail!");
+        disableBtns(true);
+        try {
+            const firstFile = files[0];
+            if (firstFile.type === "application/pdf") {
+                const mergedPdf = await PDFLib.PDFDocument.create();
+                for (let i = 0; i < files.length; i++) {
+                    updateProgress(i + 1, files.length, "Merging");
+                    const pdfBytes = await files[i].arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+                    const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+                    copiedPages.forEach(p => mergedPdf.addPage(p));
+                }
+                const bytes = await mergedPdf.save();
+                downloadBlob(new Blob([bytes]), "Merged.pdf");
+            } else if (firstFile.name.match(/\.(zip|cbz)$/i)) {
+                const zip = await JSZip.loadAsync(firstFile);
+                const imgs = Object.keys(zip.files).filter(n => n.match(/\.(jpg|jpeg|png|webp)$/i) && !n.includes('__MACOSX')).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+                await createPdf(imgs, zip, "Converted");
+            }
+        } catch (e) { alert("Ralat!"); }
+        disableBtns(false);
     };
 
-    async function convertToPDF() {
-    if (fileInput.files.length === 0) return alert("Sila pilih fail dahulu!");
-    
-    status.style.display = "block";
-    status.innerText = "Sedang membaca fail ZIP...";
-    const file = fileInput.files[0];
-    
-    try {
-        const zip = await JSZip.loadAsync(file);
+    async function createPdf(names, zip, out) {
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF();
-        
-        // Ambil fail imej dan susun mengikut nama (sort)
-        // Kita tapis fail yang bermula dengan '__MACOSX' (sampah sistem Mac)
-        const images = Object.keys(zip.files).filter(name => 
-            /\.(jpe?g|png|webp)$/i.test(name) && !name.includes('__MACOSX')
-        ).sort();
-        
-        if (images.length === 0) {
-            throw new Error("Tiada imej (JPG/PNG/WEBP) ditemui dalam fail ZIP ini.");
+        const pdf = new jsPDF({ unit: 'px', compress: true });
+        for (let i = 0; i < names.length; i++) {
+            updateProgress(i+1, names.length, "Processing");
+            const blob = await zip.files[names[i]].async("blob");
+            const img = await loadImage(URL.createObjectURL(blob));
+            const data = processImage(img);
+            if (i > 0) pdf.addPage();
+            pdf.addImage(data, 'JPEG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
         }
-
-        for (let i = 0; i < images.length; i++) {
-            status.innerText = `Memproses imej ${i + 1} daripada ${images.length}...`;
-            
-            const imgData = await zip.files[images[i]].async("uint8array");
-            const blob = new Blob([imgData]);
-            const url = URL.createObjectURL(blob);
-
-            try {
-                const img = new Image();
-                img.src = url;
-                await new Promise((resolve, reject) => {
-                    img.onload = resolve;
-                    img.onerror = () => reject(new Error(`Gagal memuatkan imej: ${images[i]}`));
-                });
-
-                if (i > 0) pdf.addPage();
-                
-                const pw = pdf.internal.pageSize.getWidth();
-                const ph = pdf.internal.pageSize.getHeight();
-                
-                // Automatik kesan format untuk jsPDF
-                const format = images[i].split('.').pop().toUpperCase();
-                const finalFormat = format === 'JPG' ? 'JPEG' : format;
-
-                pdf.addImage(img, finalFormat, 0, 0, pw, ph, undefined, 'FAST');
-            } finally {
-                URL.revokeObjectURL(url); // Bersihkan memori
-            }
-        }
-
-        pdf.save(file.name.replace(/\.[^/.]+$/, "") + ".pdf");
-        status.innerText = "✅ Siap! PDF telah dimuat turun.";
-        status.style.color = "#166534";
-    } catch (e) {
-        console.error(e);
-        status.innerText = "❌ Ralat: " + e.message;
-        status.style.color = "#991b1b";
+        pdf.save(out + ".pdf");
     }
-}
 
-    async function reverseToZip() {
-        if (fileInput.files.length === 0) return alert("Sila pilih fail dahulu!");
-        const file = fileInput.files[0];
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(file);
-        link.download = file.name.replace(".cbz", ".zip");
-        link.click();
-        status.innerText = "Siap! Fail ditukar ke .zip";
+    function processImage(img) {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width; canvas.height = img.height;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        return canvas.toDataURL('image/jpeg', 0.8);
     }
+    function loadImage(url) { return new Promise(res => { const i = new Image(); i.onload = () => res(i); i.src = url; }); }
+    function downloadBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); }
+    fileInput.onchange = () => { if(fileInput.files.length) document.getElementById('file-name').innerText = fileInput.files[0].name; };
 </script>
-
 </body>
 </html>
