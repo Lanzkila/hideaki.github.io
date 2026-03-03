@@ -10,30 +10,8 @@
     <script src='https://unpkg.com/pdf-lib/dist/pdf-lib.min.js'></script>
 
     <style>
-:root {
-  --bg-color: #f0f2f5;        /* Warna asal background */
-  --card-bg: #ffffff;         /* Warna asal kotak */
-  --text-main: #1a1d23;       /* Warna teks utama */
-  --input-bg: #f8f9fa;        /* Warna input */
-  --shadow-color: #e6e9ed;    /* Kelabu muda untuk shadow */
-  --highlight-color: #ffffff; /* Putih untuk highlight */
-  --border-color: #e1e8ed; /* Pastikan ini ada */
-}
-
-body.dark-mode {
-  --bg-color: #1a1d23;        /* Warna background gelap */
-  --card-bg: #2d3436;         /* Warna kotak gelap */
-  --text-main: #e2e8f0;       /* INI YANG AKAN TUKAR TEKS JADI CERAH */
-  --input-bg: #353b48;        /* Warna input gelap */
-  --shadow-color: #1a1e23;    /* Gelap untuk shadow (Dark mode) */
-  --highlight-color: #3b4249; /* Kelabu gelap untuk highlight */
-  --border-color: #4a5568;    /* INI AKAN TUKAR BORDER JADI GELAP */
-}
-        
 body {
-  background-color: var(--bg-color); /* Ganti warna asal dengan var */
-  color: var(--text-main);           /* Ganti warna teks */
-  transition: 0.3s;
+  background-color: #f0f2f5;
   margin: 0; padding: 20px;
   display: flex; justify-content: center; align-items: center;
   min-height: 100vh;
@@ -41,8 +19,7 @@ body {
 }
 
 #converter-vault {
-  background-color: var(--card-bg);  /* Ganti dengan var(--card-bg) */
-  color: var(--text-main);           /* Ganti dengan var(--text-main) */
+  background: #ffffff;
   padding: 30px;
   border-radius: 24px;
   max-width: 480px;
@@ -52,7 +29,7 @@ body {
 }
 
 .title-zone { text-align: center; margin-bottom: 25px; }
-.title-zone h2 { font-weight: 800; margin: 0; color: var(--text-color); font-size: 24px; }
+.title-zone h2 { font-weight: 800; margin: 0; color: #1a1d23; font-size: 24px; }
 .title-zone span { color: #0984e3; }
 
 /* Premium Drop Zone */
@@ -61,8 +38,8 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.05);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   border-radius: 24px;
-  background: var(--input-bg);
-  box-shadow: 10px 10px 20px var(--shadow-color), -10px -10px 20px var(--highlight-color);
+  background: linear-gradient(145deg, #ffffff, #f3f7fa);
+  box-shadow: 10px 10px 20px #e6e9ed, -10px -10px 20px #ffffff;
   transition: 0.3s; cursor: pointer; margin-bottom: 25px; position: relative; overflow: hidden;
 }
 .drop-zone:active { transform: scale(0.97); }
@@ -72,7 +49,7 @@ body {
 }
 
 .icon-circle {
-  width: 55px; height: 55px; background: var(--card-bg); border-radius: 50%;
+  width: 55px; height: 55px; background: #fff; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 2; margin-bottom: 10px;
 }
@@ -81,12 +58,12 @@ body {
 
 /* Control Panel */
 .control-stack { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
-.control-group { background: var(--input-bg); padding: 15px; border-radius: 15px; border: 1px solid var(--border-color); }
+.control-group { background: #f8f9fa; padding: 15px; border-radius: 15px; border: 1px solid #edf2f7; }
 .control-group label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #718096; margin-bottom: 10px; text-transform: uppercase; }
 
 select {
   width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e0;
-  background: var(--card-bg); font-size: 14px; font-weight: 600; appearance: none;
+  background: #fff; font-size: 14px; font-weight: 600; appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 10px center; background-size: 16px;
 }
@@ -112,24 +89,11 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20p
 .btn-cbz { background: #0984e3; }
 
 .footer-note { font-size: 10px; color: #a0aec0; text-align: center; margin-top: 25px; line-height: 1.6; }
-
-/* Switch Styles */
-.switch { position: relative; display: inline-block; width: 50px; height: 24px; margin-bottom: 20px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
-.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-input:checked + .slider { background-color: #2196F3; }
-input:checked + .slider:before { transform: translateX(26px); }
     </style>
 </head>
 <body>
 
 <div id='converter-vault'>
-<label class="switch">
-  <input type="checkbox" id="theme-toggle" onclick="toggleDarkMode()">
-  <span class="slider"></span>
-</label>
-<span id="theme-text">Tukar Tema</span>
   <div class='title-zone'>
     <h2>MANGA <span>STUDIO</span></h2>
     <p style='font-size:12px; color:#718096; margin-top:5px;'>Hybrid: PDF Merge, Images, ZIP &amp; CBZ</p>
@@ -341,19 +305,6 @@ fileInput.onchange = (e) => {
     }
 };
         document.getElementById("current-year").innerText = new Date().getFullYear();
-
-function toggleDarkMode() {
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    document.getElementById('theme-toggle').checked = isDark;
-}
-
-// Check status masa load
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
-    document.getElementById('theme-toggle').checked = true;
-}
     </script>
 
 </body>
