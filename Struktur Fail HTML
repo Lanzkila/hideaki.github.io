@@ -1,29 +1,20 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nama Converter Anda</title>
-
-    <!-- 1. LETAK SEMUA LINK LIBRARY (jszip, jspdf, dsb) DI SINI -->
+    <title>Manga Studio Converter</title>
+    <!-- Letak Link Library (CDN) kat sini -->
     <script src="https://cdnjs.cloudflare.com"></script>
-    <script src="https://cdnjs.cloudflare.com"></script>
-
+    
     <style>
-        /* 2. LETAK SEMUA KOD CSS DI SINI */
-        /* Ambil kod yang berada di dalam <b:skin> atau <style> Blogger anda */
+        /* AMBIL ISI PERUT <b:skin> DI SINI */
     </style>
 </head>
 <body>
 
-    <!-- 3. LETAK SEMUA STRUKTUR HTML (div, button, input) DI SINI -->
-    <!-- Ambil kod yang berada di dalam <body> Blogger anda -->
+    <!-- AMBIL ISI PERUT <body> DI SINI -->
 
     <script>
-        // 4. LETAK SEMUA LOGIK JAVASCRIPT DI SINI
-        // Ambil kod yang berada di dalam <script> Blogger anda
-        // PASTIKAN anda buang simbol //<![CDATA[ dan //]]> jika ada
+        /* AMBIL ISI PERUT <script> (TANPA CDATA) DI SINI */
     </script>
-
 </body>
 </html>
