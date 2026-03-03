@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic Converter: CBZ ↔ PDF ↔ ZIP</title>
+    <script src="https://cdnjs.cloudflare.com"></script>
+    <script src="https://cdnjs.cloudflare.com"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f9; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block; }
+        input { margin: 20px 0; }
+        button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; margin: 5px; }
+        button:disabled { background: #ccc; }
+        #status { margin-top: 20px; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Comic Converter</h2>
+    <p>Tukar fail CBZ/ZIP anda ke PDF atau sebaliknya.</p>
+    
+    <input type="file" id="fileInput" accept=".cbz,.zip">
+    <br>
+    <button onclick="convertToPDF()">Tukar ke PDF</button>
+    <button onclick="reverseToZip()">Tukar ke ZIP (Reverse)</button>
+    
+    <div id="status">Sila pilih fail untuk bermula.</div>
+</div>
+
+<script>
+    const { jsPDF } = window.jspdf;
+
+    async function convertToPDF() {
+        const fileInput = document.getElementById('fileInput');
+        const status = document.getElementById('status');
+        if (fileInput.files.length === 0) return alert("Sila pilih fail!");
+
+        const file = fileInput.files[0];
+        status.innerText = "Sedang memproses... Sila tunggu.";
+        
+        try {
+            const zip = await JSZip.loadAsync(file);
+            const pdf = new jsPDF();
+            const imgFiles = Object.keys(zip.files).filter(name => /\.(jpe?g|png|webp)$/i.test(name)).sort();
+
+            for (let i = 0; i < imgFiles.length; i++) {
+                const imgData = await zip.files[imgFiles[i]].async("blob");
+                const imgUrl = URL.createObjectURL(imgData);
+                
+                // Tambah gambar ke PDF
+                const img = new Image();
+                img.src = imgUrl;
+                await new Promise(resolve => img.onload = resolve);
+                
+                if (i > 0) pdf.addPage();
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                pdf.addImage(img, 'JPEG', 0, 0, pageWidth, pageHeight);
+                URL.revokeObjectURL(imgUrl);
+            }
+
+            pdf.save(file.name.replace(/\.[^/.]+$/, "") + ".pdf");
+            status.innerText = "Siap! PDF telah dimuat turun.";
+        } catch (e) {
+            status.innerText = "Ralat: Fail mungkin rosak atau tidak disokong.";
+        }
+    }
+
+    async function reverseToZip() {
+        const fileInput = document.getElementById('fileInput');
+        const status = document.getElementById('status');
+        if (fileInput.files.length === 0) return alert("Sila pilih fail!");
+
+        const file = fileInput.files[0];
+        status.innerText = "Menukar kembali ke ZIP...";
+
+        try {
+            const zip = await JSZip.loadAsync(file);
+            const content = await zip.generateAsync({type:"blob"});
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(content);
+            link.download = file.name.replace(".cbz", ".zip");
+            link.click();
+            status.innerText = "Siap! Fail ditukar ke .zip.";
+        } catch (e) {
+            status.innerText = "Ralat semasa menukar.";
+        }
+    }
+</script>
+
+</body>
+</html>
