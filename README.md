@@ -24,3 +24,6 @@
 
 ---
 *Dibina dengan penuh minat untuk peminat manga.*
+
+Dilarang keras untuk mengambil kode yang ada dalam page ini. jika mau tanya kepada saya dulu. Terima kasih
+
