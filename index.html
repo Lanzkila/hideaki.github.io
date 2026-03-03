@@ -6,27 +6,112 @@
     <title>Comic Converter: CBZ ↔ PDF ↔ ZIP</title>
     <script src="https://cdnjs.cloudflare.com"></script>
     <script src="https://cdnjs.cloudflare.com"></script>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f9; }
-        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block; }
-        input { margin: 20px 0; }
-        button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; margin: 5px; }
-        button:disabled { background: #ccc; }
-        #status { margin-top: 20px; color: #555; }
-    </style>
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --bg: #f8fafc;
+    }
+
+    body { 
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        background-color: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    .container { 
+        background: white; 
+        padding: 40px; 
+        border-radius: 20px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+    }
+
+    h2 { color: #1e293b; margin-bottom: 10px; }
+    p { color: #64748b; font-size: 0.9rem; margin-bottom: 25px; }
+
+    /* Custom File Input */
+    .file-drop-area {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 25px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        transition: 0.3s;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    .file-drop-area:hover {
+        border-color: var(--primary);
+        background: #f5f3ff;
+    }
+
+    .file-drop-area input {
+        position: absolute;
+        left: 0; top: 0; height: 100%; width: 100%;
+        opacity: 0; cursor: pointer;
+    }
+
+    .file-msg {
+        color: #94a3b8;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* Buttons */
+    .btn-group { display: grid; gap: 10px; }
+    
+    button { 
+        padding: 12px; 
+        cursor: pointer; 
+        background: var(--primary); 
+        color: white; 
+        border: none; 
+        border-radius: 10px; 
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    button.secondary { background: #f1f5f9; color: #475569; }
+    button.secondary:hover { background: #e2e8f0; }
+
+    #status { 
+        margin-top: 20px; 
+        font-size: 13px; 
+        padding: 10px;
+        border-radius: 8px;
+        display: none; /* Hidden by default */
+    }
+</style>
 </head>
 <body>
 
 <div class="container">
     <h2>Comic Converter</h2>
-    <p>Tukar fail CBZ/ZIP anda ke PDF atau sebaliknya.</p>
+    <p>Tukar fail CBZ/ZIP ke PDF dengan cepat.</p>
     
-    <input type="file" id="fileInput" accept=".cbz,.zip">
-    <br>
-    <button onclick="convertToPDF()">Tukar ke PDF</button>
-    <button onclick="reverseToZip()">Tukar ke ZIP (Reverse)</button>
+    <div class="file-drop-area">
+        <span class="file-msg" id="fileName">Klik atau tarik fail CBZ/ZIP ke sini</span>
+        <input type="file" id="fileInput" accept=".cbz,.zip" onchange="updateFileName()">
+    </div>
+
+    <div class="btn-group">
+        <button onclick="convertToPDF()">Tukar ke PDF</button>
+        <button class="secondary" onclick="reverseToZip()">Tukar ke ZIP</button>
+    </div>
     
-    <div id="status">Sila pilih fail untuk bermula.</div>
+    <div id="status"></div>
 </div>
 
 <script>
@@ -88,6 +173,25 @@
             status.innerText = "Ralat semasa menukar.";
         }
     }
+
+    function updateFileName() {
+    const input = document.getElementById('fileInput');
+    const msg = document.getElementById('fileName');
+    if (input.files.length > 0) {
+        msg.innerText = "Fail dipilih: " + input.files[0].name;
+        msg.style.color = "#6366f1";
+    }
+}
+
+// Tambah ini dalam fungsi convertToPDF / reverseToZip untuk tunjuk status
+function showStatus(text, isError = false) {
+    const status = document.getElementById('status');
+    status.style.display = "block";
+    status.innerText = text;
+    status.style.backgroundColor = isError ? "#fee2e2" : "#f0fdf4";
+    status.style.color = isError ? "#991b1b" : "#166534";
+}
+
 </script>
 
 </body>
