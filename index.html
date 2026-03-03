@@ -9,119 +9,108 @@
     <script src="https://cdnjs.cloudflare.com"></script>
 <style>
     :root {
-        --primary: #6366f1;
-        --primary-hover: #4f46e5;
-        --bg: #f8fafc;
-    }
+    --primary-color: #5d6cf1;
+    --bg-color: #f8faff;
+    --card-bg: #ffffff;
+}
 
-    body { 
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-        background-color: var(--bg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        margin: 0;
-    }
+body {
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
 
-    .container { 
-        background: white; 
-        padding: 40px; 
-        border-radius: 20px; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-        width: 100%;
-        max-width: 450px;
-        text-align: center;
-    }
+.container {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
 
-    h2 { color: #1e293b; margin-bottom: 10px; }
-    p { color: #64748b; font-size: 0.9rem; margin-bottom: 25px; }
+.title { color: #1a202c; margin-bottom: 8px; font-weight: 700; }
+.subtitle { color: #718096; font-size: 0.85rem; margin-bottom: 30px; }
 
+/* Shadow Box Area */
 .file-drop-area {
     position: relative;
-    display: flex;
-    flex-direction: column; /* Ikon di atas teks */
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+    border-radius: 20px;
     padding: 40px 20px;
-    border: 2px dashed #e2e8f0;
-    border-radius: 16px;
-    background: #ffffff;
-    
-    /* Efek Shadow Box */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    
-    transition: all 0.3s ease;
-    cursor: pointer;
     margin-bottom: 25px;
+    background: #fff;
+    /* Ini efek shadow box yang anda mahu */
+    box-shadow: inset 0 0 0 1px #edf2f7, 0 10px 20px rgba(0,0,0,0.03);
+    transition: 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Efek saat mouse mendekat atau file ditarik ke atasnya */
-.file-drop-area:hover, .file-drop-area.dragover {
-    border-color: #6366f1;
-    background: #f8faff;
+.file-drop-area:hover {
     transform: translateY(-2px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.06);
 }
+
+.icon-display {
+    font-size: 60px !important; /* Saiz ikon besar */
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-style: normal !important; /* Pastikan tak senget */
+}
+
+.file-msg { color: #4a5568; font-size: 0.9rem; font-weight: 500; }
 
 .file-drop-area input {
     position: absolute;
-    left: 0; top: 0; height: 100%; width: 100%;
-    opacity: 0; 
+    top: 0; left: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer;
+}
+
+/* Buttons */
+.btn-group { display: flex; flex-direction: column; gap: 12px; }
+
+button {
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
     cursor: pointer;
+    transition: 0.2s;
+    font-size: 0.9rem;
 }
 
-.file-msg {
-    color: #475569;
-    font-size: 15px;
-    font-weight: 500;
-}
+.btn-primary { background: var(--primary-color); color: white; }
+.btn-primary:hover { background: #4a59e0; }
 
-    /* Buttons */
-    .btn-group { display: grid; gap: 10px; }
-    
-    button { 
-        padding: 12px; 
-        cursor: pointer; 
-        background: var(--primary); 
-        color: white; 
-        border: none; 
-        border-radius: 10px; 
-        font-weight: 600;
-        transition: 0.2s;
-    }
+.btn-secondary { background: #edf2f7; color: #4a5568; }
+.btn-secondary:hover { background: #e2e8f0; }
 
-    button:hover { background: var(--primary-hover); transform: translateY(-1px); }
-    button.secondary { background: #f1f5f9; color: #475569; }
-    button.secondary:hover { background: #e2e8f0; }
-
-    #status { 
-        margin-top: 20px; 
-        font-size: 13px; 
-        padding: 10px;
-        border-radius: 8px;
-        display: none; /* Hidden by default */
-    }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Comic Converter</h2>
-    <p>Tukar fail CBZ/ZIP ke PDF dengan cepat.</p>
+    <h2 class="title">Comic Converter</h2>
+    <p class="subtitle">Tukar fail CBZ/ZIP ke PDF dengan cepat.</p>
     
     <div class="file-drop-area" id="dropArea">
-    <!-- Ikon Folder -->
-    <i class="material-icons" style="font-size: 48px; color: #6366f1; margin-bottom: 10px;">folder_open</i>
-    <span class="file-msg" id="fileName">Tarik fail ke sini atau klik untuk cari</span>
-    <input type="file" id="fileInput" accept=".cbz,.zip" onchange="updateFileName()">
-</div>
+        <i class="material-icons icon-display">folder_open</i>
+        <span class="file-msg" id="fileName">Tarik fail ke sini atau klik untuk cari</span>
+        <input type="file" id="fileInput" accept=".cbz,.zip" onchange="updateFileName()">
+    </div>
 
     <div class="btn-group">
-        <button onclick="convertToPDF()">Tukar ke PDF</button>
-        <button class="secondary" onclick="reverseToZip()">Tukar ke ZIP</button>
+        <button class="btn-primary" onclick="convertToPDF()">Tukar ke PDF</button>
+        <button class="btn-secondary" onclick="reverseToZip()">Tukar ke ZIP</button>
     </div>
+</div>
     
     <div id="status"></div>
 </div>
