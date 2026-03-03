@@ -3,212 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic Converter</title>
+    
+    <!-- Library Penting -->
+    <script src="https://cdnjs.cloudflare.com"></script>
+    <script src="https://cdnjs.cloudflare.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
-    <title>Comic Converter: CBZ ↔ PDF ↔ ZIP</title>
-    <script src="https://cdnjs.cloudflare.com"></script>
-    <script src="https://cdnjs.cloudflare.com"></script>
-<style>
-    :root {
-    --primary-color: #5d6cf1;
-    --bg-color: #f8faff;
-    --card-bg: #ffffff;
-}
 
-body {
-    background-color: var(--bg-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-.container {
-    background: var(--card-bg);
-    padding: 40px;
-    border-radius: 24px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-}
-
-.title { color: #1a202c; margin-bottom: 8px; font-weight: 700; }
-.subtitle { color: #718096; font-size: 0.85rem; margin-bottom: 30px; }
-
-/* Shadow Box Area */
-.file-drop-area {
-    position: relative;
-    border-radius: 20px;
-    padding: 40px 20px;
-    margin-bottom: 25px;
-    background: #fff;
-    /* Ini efek shadow box yang anda mahu */
-    box-shadow: inset 0 0 0 1px #edf2f7, 0 10px 20px rgba(0,0,0,0.03);
-    transition: 0.3s;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.file-drop-area:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.06);
-}
-
-.icon-display {
-    font-size: 60px !important; /* Saiz ikon besar */
-    color: var(--primary-color);
-    margin-bottom: 15px;
-    font-style: normal !important; /* Pastikan tak senget */
-}
-
-.file-msg { color: #4a5568; font-size: 0.9rem; font-weight: 500; }
-
-.file-drop-area input {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    opacity: 0; cursor: pointer;
-}
-
-/* Buttons */
-.btn-group { display: flex; flex-direction: column; gap: 12px; }
-
-button {
-    padding: 14px;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-    font-size: 0.9rem;
-}
-
-.btn-primary { background: var(--primary-color); color: white; }
-.btn-primary:hover { background: #4a59e0; }
-
-.btn-secondary { background: #edf2f7; color: #4a5568; }
-.btn-secondary:hover { background: #e2e8f0; }
-
-</style>
+    <style>
+        :root { --primary: #5d6cf1; --bg: #f8faff; }
+        body { background: var(--bg); font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); width: 350px; text-align: center; }
+        .file-drop-area { position: relative; border-radius: 20px; padding: 40px 20px; margin-bottom: 20px; box-shadow: inset 0 0 0 1px #edf2f7, 0 10px 20px rgba(0,0,0,0.03); cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+        .icon-display { font-size: 50px !important; color: var(--primary); margin-bottom: 10px; font-style: normal !important; }
+        .file-msg { color: #4a5568; font-size: 0.8rem; font-weight: 500; }
+        input[type=file] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        button { padding: 12px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .btn-pdf { background: var(--primary); color: white; }
+        .btn-zip { background: #edf2f7; color: #4a5568; }
+        button:active { transform: scale(0.98); }
+        #status { margin-top: 15px; font-size: 0.75rem; color: #718096; }
+    </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 class="title">Comic Converter</h2>
-    <p class="subtitle">Tukar fail CBZ/ZIP ke PDF dengan cepat.</p>
+    <h2 style="margin:0 0 5px 0;">Comic Converter</h2>
+    <p style="color:#718096; font-size:0.8rem; margin-bottom:25px;">Tukar fail CBZ/ZIP ke PDF dengan cepat.</p>
     
-    <div class="file-drop-area" id="dropArea">
+    <div class="file-drop-area">
         <i class="material-icons icon-display">folder_open</i>
-        <span class="file-msg" id="fileName">Tarik fail ke sini atau klik untuk cari</span>
-        <input type="file" id="fileInput" accept=".cbz,.zip" onchange="updateFileName()">
+        <span id="fileName" class="file-msg">Tarik fail ke sini atau klik untuk cari</span>
+        <input type="file" id="fileInput" accept=".cbz,.zip">
     </div>
 
     <div class="btn-group">
-        <button class="btn-primary" onclick="convertToPDF()">Tukar ke PDF</button>
-        <button class="btn-secondary" onclick="reverseToZip()">Tukar ke ZIP</button>
+        <button class="btn-pdf" onclick="convertToPDF()">Tukar ke PDF</button>
+        <button class="btn-zip" onclick="reverseToZip()">Tukar ke ZIP</button>
     </div>
-</div>
-    
     <div id="status"></div>
 </div>
 
 <script>
-    const { jsPDF } = window.jspdf;
+    const fileInput = document.getElementById('fileInput');
+    const fileNameDisplay = document.getElementById('fileName');
+    const status = document.getElementById('status');
+
+    // Papar nama fail bila dipilih
+    fileInput.onchange = () => {
+        if (fileInput.files.length > 0) {
+            fileNameDisplay.innerText = fileInput.files[0].name;
+            status.innerText = "Fail sedia untuk ditukar.";
+        }
+    };
 
     async function convertToPDF() {
-        const fileInput = document.getElementById('fileInput');
-        const status = document.getElementById('status');
-        if (fileInput.files.length === 0) return alert("Sila pilih fail!");
-
+        if (fileInput.files.length === 0) return alert("Sila pilih fail dahulu!");
+        
+        status.innerText = "Sedang menukar ke PDF... (Sila tunggu)";
         const file = fileInput.files[0];
-        status.innerText = "Sedang memproses... Sila tunggu.";
         
         try {
             const zip = await JSZip.loadAsync(file);
+            const { jsPDF } = window.jspdf;
             const pdf = new jsPDF();
-            const imgFiles = Object.keys(zip.files).filter(name => /\.(jpe?g|png|webp)$/i.test(name)).sort();
+            
+            // Ambil semua fail imej dalam ZIP/CBZ
+            const images = Object.keys(zip.files).filter(name => /\.(jpe?g|png|webp)$/i.test(name)).sort();
+            
+            if (images.length === 0) {
+                status.innerText = "Ralat: Tiada imej ditemui dalam fail!";
+                return;
+            }
 
-            for (let i = 0; i < imgFiles.length; i++) {
-                const imgData = await zip.files[imgFiles[i]].async("blob");
-                const imgUrl = URL.createObjectURL(imgData);
-                
-                // Tambah gambar ke PDF
+            for (let i = 0; i < images.length; i++) {
+                const imgData = await zip.files[images[i]].async("uint8array");
+                const blob = new Blob([imgData]);
+                const url = URL.createObjectURL(blob);
+
                 const img = new Image();
-                img.src = imgUrl;
-                await new Promise(resolve => img.onload = resolve);
-                
+                img.src = url;
+                await new Promise(res => img.onload = res);
+
                 if (i > 0) pdf.addPage();
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const pageHeight = pdf.internal.pageSize.getHeight();
-                pdf.addImage(img, 'JPEG', 0, 0, pageWidth, pageHeight);
-                URL.revokeObjectURL(imgUrl);
+                const pw = pdf.internal.pageSize.getWidth();
+                const ph = pdf.internal.pageSize.getHeight();
+                pdf.addImage(img, 'JPEG', 0, 0, pw, ph);
+                URL.revokeObjectURL(url);
             }
 
             pdf.save(file.name.replace(/\.[^/.]+$/, "") + ".pdf");
             status.innerText = "Siap! PDF telah dimuat turun.";
         } catch (e) {
-            status.innerText = "Ralat: Fail mungkin rosak atau tidak disokong.";
+            console.error(e);
+            status.innerText = "Ralat: Gagal memproses fail.";
         }
     }
 
     async function reverseToZip() {
-        const fileInput = document.getElementById('fileInput');
-        const status = document.getElementById('status');
-        if (fileInput.files.length === 0) return alert("Sila pilih fail!");
-
+        if (fileInput.files.length === 0) return alert("Sila pilih fail dahulu!");
         const file = fileInput.files[0];
-        status.innerText = "Menukar kembali ke ZIP...";
-
-        try {
-            const zip = await JSZip.loadAsync(file);
-            const content = await zip.generateAsync({type:"blob"});
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(content);
-            link.download = file.name.replace(".cbz", ".zip");
-            link.click();
-            status.innerText = "Siap! Fail ditukar ke .zip.";
-        } catch (e) {
-            status.innerText = "Ralat semasa menukar.";
-        }
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(file);
+        link.download = file.name.replace(".cbz", ".zip");
+        link.click();
+        status.innerText = "Siap! Fail ditukar ke .zip";
     }
-
-    function updateFileName() {
-    const input = document.getElementById('fileInput');
-    const msg = document.getElementById('fileName');
-    if (input.files.length > 0) {
-        msg.innerText = "Fail dipilih: " + input.files[0].name;
-        msg.style.color = "#6366f1";
-    }
-}
-
-// Tambah ini dalam fungsi convertToPDF / reverseToZip untuk tunjuk status
-function showStatus(text, isError = false) {
-    const status = document.getElementById('status');
-    status.style.display = "block";
-    status.innerText = text;
-    status.style.backgroundColor = isError ? "#fee2e2" : "#f0fdf4";
-    status.style.color = isError ? "#991b1b" : "#166534";
-}
-
-    const dropArea = document.getElementById('dropArea');
-
-['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        dropArea.classList.add('dragover');
-    }, false);
-});
-
-['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        dropArea.classList.remove('dragover');
-    }, false);
-});
-
 </script>
 
 </body>
