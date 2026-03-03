@@ -59,47 +59,66 @@
     };
 
     async function convertToPDF() {
-        if (fileInput.files.length === 0) return alert("Sila pilih fail dahulu!");
+    if (fileInput.files.length === 0) return alert("Sila pilih fail dahulu!");
+    
+    status.style.display = "block";
+    status.innerText = "Sedang membaca fail ZIP...";
+    const file = fileInput.files[0];
+    
+    try {
+        const zip = await JSZip.loadAsync(file);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
         
-        status.innerText = "Sedang menukar ke PDF... (Sila tunggu)";
-        const file = fileInput.files[0];
+        // Ambil fail imej dan susun mengikut nama (sort)
+        // Kita tapis fail yang bermula dengan '__MACOSX' (sampah sistem Mac)
+        const images = Object.keys(zip.files).filter(name => 
+            /\.(jpe?g|png|webp)$/i.test(name) && !name.includes('__MACOSX')
+        ).sort();
         
-        try {
-            const zip = await JSZip.loadAsync(file);
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-            
-            // Ambil semua fail imej dalam ZIP/CBZ
-            const images = Object.keys(zip.files).filter(name => /\.(jpe?g|png|webp)$/i.test(name)).sort();
-            
-            if (images.length === 0) {
-                status.innerText = "Ralat: Tiada imej ditemui dalam fail!";
-                return;
-            }
+        if (images.length === 0) {
+            throw new Error("Tiada imej (JPG/PNG/WEBP) ditemui dalam fail ZIP ini.");
+        }
 
-            for (let i = 0; i < images.length; i++) {
-                const imgData = await zip.files[images[i]].async("uint8array");
-                const blob = new Blob([imgData]);
-                const url = URL.createObjectURL(blob);
+        for (let i = 0; i < images.length; i++) {
+            status.innerText = `Memproses imej ${i + 1} daripada ${images.length}...`;
+            
+            const imgData = await zip.files[images[i]].async("uint8array");
+            const blob = new Blob([imgData]);
+            const url = URL.createObjectURL(blob);
 
+            try {
                 const img = new Image();
                 img.src = url;
-                await new Promise(res => img.onload = res);
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = () => reject(new Error(`Gagal memuatkan imej: ${images[i]}`));
+                });
 
                 if (i > 0) pdf.addPage();
+                
                 const pw = pdf.internal.pageSize.getWidth();
                 const ph = pdf.internal.pageSize.getHeight();
-                pdf.addImage(img, 'JPEG', 0, 0, pw, ph);
-                URL.revokeObjectURL(url);
-            }
+                
+                // Automatik kesan format untuk jsPDF
+                const format = images[i].split('.').pop().toUpperCase();
+                const finalFormat = format === 'JPG' ? 'JPEG' : format;
 
-            pdf.save(file.name.replace(/\.[^/.]+$/, "") + ".pdf");
-            status.innerText = "Siap! PDF telah dimuat turun.";
-        } catch (e) {
-            console.error(e);
-            status.innerText = "Ralat: Gagal memproses fail.";
+                pdf.addImage(img, finalFormat, 0, 0, pw, ph, undefined, 'FAST');
+            } finally {
+                URL.revokeObjectURL(url); // Bersihkan memori
+            }
         }
+
+        pdf.save(file.name.replace(/\.[^/.]+$/, "") + ".pdf");
+        status.innerText = "✅ Siap! PDF telah dimuat turun.";
+        status.style.color = "#166534";
+    } catch (e) {
+        console.error(e);
+        status.innerText = "❌ Ralat: " + e.message;
+        status.style.color = "#991b1b";
     }
+}
 
     async function reverseToZip() {
         if (fileInput.files.length === 0) return alert("Sila pilih fail dahulu!");
