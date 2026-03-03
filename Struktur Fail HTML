@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nama Converter Anda</title>
+
+    <!-- 1. LETAK SEMUA LINK LIBRARY (jszip, jspdf, dsb) DI SINI -->
+    <script src="https://cdnjs.cloudflare.com"></script>
+    <script src="https://cdnjs.cloudflare.com"></script>
+
+    <style>
+        /* 2. LETAK SEMUA KOD CSS DI SINI */
+        /* Ambil kod yang berada di dalam <b:skin> atau <style> Blogger anda */
+    </style>
+</head>
+<body>
+
+    <!-- 3. LETAK SEMUA STRUKTUR HTML (div, button, input) DI SINI -->
+    <!-- Ambil kod yang berada di dalam <body> Blogger anda -->
+
+    <script>
+        // 4. LETAK SEMUA LOGIK JAVASCRIPT DI SINI
+        // Ambil kod yang berada di dalam <script> Blogger anda
+        // PASTIKAN anda buang simbol //<![CDATA[ dan //]]> jika ada
+    </script>
+
+</body>
+</html>
