@@ -45,7 +45,7 @@ body {
 }
 
 .title-zone { text-align: center; margin-bottom: 25px; }
-.title-zone h2 { font-weight: 800; margin: 0; color: #1a1d23; font-size: 24px; }
+.title-zone h2 { font-weight: 800; margin: 0; color: var(--text-color); font-size: 24px; }
 .title-zone span { color: #0984e3; }
 
 /* Premium Drop Zone */
@@ -54,7 +54,7 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.05);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   border-radius: 24px;
-  background: linear-gradient(145deg, #ffffff, #f3f7fa);
+  background: var(--input-bg);
   box-shadow: 10px 10px 20px #e6e9ed, -10px -10px 20px #ffffff;
   transition: 0.3s; cursor: pointer; margin-bottom: 25px; position: relative; overflow: hidden;
 }
@@ -65,7 +65,7 @@ body {
 }
 
 .icon-circle {
-  width: 55px; height: 55px; background: #fff; border-radius: 50%;
+  width: 55px; height: 55px; background: var(--card-bg); border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 2; margin-bottom: 10px;
 }
@@ -79,7 +79,7 @@ body {
 
 select {
   width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e0;
-  background: #fff; font-size: 14px; font-weight: 600; appearance: none;
+  background: var(--card-bg); font-size: 14px; font-weight: 600; appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 10px center; background-size: 16px;
 }
